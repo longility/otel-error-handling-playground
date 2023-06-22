@@ -100,6 +100,18 @@ server.get("/capturing-a-span", async (request, reply) => {
   reply.send(200);
 });
 
+server.addHook("onSend", (request, reply, payload, done) => {
+  const spanContext = trace.getSpan(context.active())?.spanContext();
+  if (spanContext)
+    reply.header(
+      "traceparent",
+      `00-${spanContext.traceId}-${spanContext.spanId}-${spanContext.traceFlags
+        .toString()
+        .padStart(2, "0")}`
+    );
+  done();
+});
+
 server.addHook("onError", async (request, reply, error) => {
   const span = trace.getSpan(context.active());
 
