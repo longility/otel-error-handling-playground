@@ -1,5 +1,5 @@
 {
-  "name": "long-otel-error-handling-poc",
+  "name": "otel-error-handling-playground",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

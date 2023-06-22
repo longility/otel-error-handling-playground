@@ -1,4 +1,4 @@
-# long-otel-error-handling-poc
+# otel-error-handling-playground
 
 ## TODO
 

@@ -75,7 +75,7 @@ server.get("/log", (request, reply) => {
 
 server.get("/capturing-a-span", async (request, reply) => {
   await new Promise((resolve) => setTimeout(resolve, 100));
-  const tracer = trace.getTracer("long-otel-error-handling-poc");
+  const tracer = trace.getTracer("otel-error-handling-playground");
   await tracer.startActiveSpan("test span abc", async (span) => {
     try {
       span.setAttribute("abc.foo", "bar");
