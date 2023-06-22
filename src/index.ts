@@ -100,15 +100,19 @@ server.get("/capturing-a-span", async (request, reply) => {
   reply.send(200);
 });
 
-server.setErrorHandler(function (error, request, reply) {
+server.addHook("onError", async (request, reply, error) => {
   const span = trace.getSpan(context.active());
+
+  if (error instanceof ApplicationError && error.cause instanceof Error)
+    span?.recordException(error.cause);
+  if (error instanceof Error) span?.recordException(error);
+});
+
+server.setErrorHandler(function (error, request, reply) {
   if (error instanceof ApplicationError) {
     const { statusCode, message, metadata } = transformApplicationError(error);
-    if (error.cause instanceof Error) span?.recordException(error.cause);
-    span?.recordException(error);
     reply.code(statusCode).send({ message, metadata });
   } else if (error instanceof ZodError) {
-    span?.recordException(error);
     //  https://github.com/colinhacks/zod/blob/master/ERROR_HANDLING.md
     const flattenedError = error.flatten();
     if (flattenedError.formErrors.length > 0) {
@@ -123,7 +127,6 @@ server.setErrorHandler(function (error, request, reply) {
       });
     }
   } else if (error instanceof Error) {
-    span?.recordException(error);
     reply.code(500).send({ message: "it's not you it's me" });
   } else {
     reply.send(error);
