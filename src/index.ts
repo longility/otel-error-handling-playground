@@ -1,4 +1,8 @@
-import { ApplicationError, ApplicationErrorCodes } from "application-error";
+import {
+  ApplicationError,
+  ApplicationErrorCode,
+  ApplicationErrorCodes,
+} from "application-error";
 import "./tracing";
 import { fastify } from "fastify";
 import { ZodError, z } from "zod";
@@ -122,8 +126,9 @@ server.addHook("onError", async (request, reply, error) => {
 
 server.setErrorHandler(function (error, request, reply) {
   if (error instanceof ApplicationError) {
-    const { statusCode, message, metadata } = transformApplicationError(error);
-    reply.code(statusCode).send({ message, metadata });
+    reply
+      .code(getStatusCode(error.code))
+      .send({ message: error.message, metadata: error.metadata });
   } else if (error instanceof ZodError) {
     //  https://github.com/colinhacks/zod/blob/master/ERROR_HANDLING.md
     const flattenedError = error.flatten();
@@ -155,43 +160,39 @@ const main = async () => {
 
 main();
 
-const transformApplicationError = ({
-  code,
-  message,
-  metadata,
-}: ApplicationError) => {
+const getStatusCode = (code: ApplicationErrorCode) => {
   switch (code) {
     case "CANCELED":
-      return { statusCode: 408, message };
+      return 408;
     case "UNKNOWN":
-      return { statusCode: 500, message: "it's not you it's me" };
+      return 500;
     case "INVALID_ARGUMENT":
-      return { statusCode: 400, message, metadata };
+      return 400;
     case "DEADLINE_EXCEEDED":
-      return { statusCode: 408, message };
+      return 408;
     case "NOT_FOUND":
-      return { statusCode: 404, message };
+      return 404;
     case "ALREADY_EXISTS":
-      return { statusCode: 409, message, metadata };
+      return 409;
     case "PERMISSION_DENIED":
-      return { statusCode: 403, message };
+      return 403;
     case "RESOURCE_EXHAUSTED":
-      return { statusCode: 429, message };
+      return 429;
     case "FAILED_PRECONDITION":
-      return { statusCode: 412, message, metadata };
+      return 412;
     case "ABORTED":
-      return { statusCode: 409, message };
+      return 409;
     case "OUT_OF_RANGE":
-      return { statusCode: 400, message };
+      return 400;
     case "UNIMPLEMENTED":
-      return { statusCode: 404, message };
+      return 404;
     case "INTERNAL":
-      return { statusCode: 500, message: "it's not you it's me" };
+      return 500;
     case "UNAVAILABLE":
-      return { statusCode: 503, message };
+      return 503;
     case "DATA_LOSS":
-      return { statusCode: 500, message };
+      return 500;
     case "UNAUTHENTICATED":
-      return { statusCode: 401, message };
+      return 401;
   }
 };
