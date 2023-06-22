@@ -2,9 +2,6 @@
 
 ## TODO
 
-- [ ] record the cause for a wrapped error automatically
-- [ ] transform zod error to appropriate http error and body for form https://github.com/colinhacks/zod/blob/master/ERROR_HANDLING.md
-- [ ] translate application error to appropriate http error (hook/middleware)
 - [ ] calling another api
 - [ ] async continuation of trace
 
