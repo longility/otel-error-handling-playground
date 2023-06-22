@@ -9,14 +9,14 @@
 
 Producer
 
-```
+```typescript
 const span = trace.getSpan(context.active());
 const spanContext = span?.spanContext();
 ```
 
 Consumer
 
-```
+```typescript
 import "./tracing";
 import { ScanCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
 import { tracer } from "./utils";
