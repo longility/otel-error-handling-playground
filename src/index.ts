@@ -12,9 +12,10 @@ server.get("/", (request, reply) => {
 });
 
 server.get("/non-application-error", (request, reply) => {
-  throw new Error(
-    "I am not an application error. Simulating an unexpected thrown error."
-  );
+  const array: string[] = 5 as any;
+  if (array.filter((a) => a.length === 5).length === 5) {
+    console.log("should blow up on previous line");
+  }
 });
 
 const ApplicationErrorRequestQuery = z.object({
